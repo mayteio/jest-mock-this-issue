@@ -1,11 +1,16 @@
-export const proxyMockChannel = (channel, client) => {
-  const handler = {
+export const proxyMockChannel = (channel, client) =>
+  new Proxy(channel, {
     get(target, key) {
-      if (key === "myID") return client.id;
-      return target[key];
+      switch (key) {
+        // intercept the "members" getter
+        case "members":
+          return {
+            ...target.members,
+            myID: client.id
+          };
+        // otherwise just return the normal value
+        default:
+          return target[key];
+      }
     }
-  };
-  return new Proxy(channel, handler);
-};
-
-export default proxyMockChannel;
+  });

@@ -1,15 +1,21 @@
-import MockChannel from "./mock-channel";
-import proxyChannel from "./proxyMockChannel";
+import { MockChannel } from "./mock-channel";
 
 class MockInstance {
-  channels = {};
+  constructor() {
+    this.channels = {};
+  }
 
-  channel = (name, client) => {
+  channel(name) {
+    // if the channel doesn't already exist, create one.
     if (!this.channels[name]) {
       this.channels[name] = new MockChannel(name);
     }
-    return proxyChannel(this.channels[name], client);
-  };
+
+    // return the channel.
+    return this.channels[name];
+  }
 }
 
-export default new MockInstance();
+// by exporting a new instance, it ensures other scripts
+// always refer to the same instance of our class.
+export const MockPusherInstance = new MockInstance();
